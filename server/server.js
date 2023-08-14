@@ -6,18 +6,25 @@ import errorHandler from "./middleware/errorHandler.js";
 
 import connectDB from "./config/connectDB.js";
 
+import userRoutes from "./routes/userRoutes.js";
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-//Middleware
-app.use(notFoundHandler);
-app.use(errorHandler);
+//Body parser middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+//Routes
+app.use("/api/users", userRoutes);
 app.get("/", (req, res) => {
   res.send(`API running ...`);
 });
+
+//Middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 const start = async () => {
   await connectDB();
