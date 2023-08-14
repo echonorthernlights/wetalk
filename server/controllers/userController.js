@@ -26,4 +26,23 @@ const getUserById = asyncHandler(async (req, res) => {
   }
 });
 
-export { getUsers, getUserById };
+//@desc register user
+//@route POST api/users/register
+//@access Public
+const register = asyncHandler(async (req, res) => {
+  const { firstName, lastName, email, password } = req.body;
+  const newUser = {
+    firstName,
+    lastName,
+    email,
+    password,
+  };
+  const createdUser = await User.create(newUser);
+  if (createdUser) {
+    res.status(201).json(createdUser);
+  } else {
+    throw new Error("Invalid data for user");
+  }
+});
+
+export { getUsers, getUserById, register };
