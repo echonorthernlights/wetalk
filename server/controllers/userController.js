@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import asyncHandler from "../middleware/asyncHandler.js";
+import generateToken from "../utils/generateToken.js";
 
 //@desc get users
 //@route GET api/users/
@@ -40,6 +41,7 @@ const register = asyncHandler(async (req, res) => {
   const createdUser = await User.create(newUser);
   if (createdUser) {
     createdUser.password = null;
+    generateToken(res, createdUser._id);
     res.status(201).json(createdUser);
   } else {
     throw new Error("Invalid data for user");
