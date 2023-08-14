@@ -18,7 +18,7 @@ const getUsers = asyncHandler(async (req, res) => {
 //@access Private
 const getUserById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
-  const users = await User.findById(userId).lean();
+  const user = await User.findById(userId).lean();
   if (user) {
     res.status(200).json(user);
   } else {
