@@ -5,7 +5,7 @@ import asyncHandler from "../middleware/asyncHandler.js";
 //@route GET api/users/
 //@access Private/admin
 const getUsers = asyncHandler(async (req, res) => {
-  const users = await User.find({}).lean();
+  const users = await User.find({}).select("-password").lean();
   if (users) {
     res.status(200).json(users);
   } else {
@@ -18,7 +18,7 @@ const getUsers = asyncHandler(async (req, res) => {
 //@access Private
 const getUserById = asyncHandler(async (req, res) => {
   const { id: userId } = req.params;
-  const user = await User.findById(userId).lean();
+  const user = await User.findById(userId).select("-password").lean();
   if (user) {
     res.status(200).json(user);
   } else {
@@ -39,6 +39,7 @@ const register = asyncHandler(async (req, res) => {
   };
   const createdUser = await User.create(newUser);
   if (createdUser) {
+    createdUser.password = null;
     res.status(201).json(createdUser);
   } else {
     throw new Error("Invalid data for user");
