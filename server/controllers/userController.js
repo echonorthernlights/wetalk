@@ -2,6 +2,39 @@ import User from "../models/User.js";
 import asyncHandler from "../middleware/asyncHandler.js";
 import generateToken from "../utils/generateToken.js";
 
+//@desc auth user
+//@route POST api/users/login
+//@access Public
+const auth = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email }).exec();
+  if (user && (await user.matchPassword(password))) {
+    const token = generateToken(res, user._id);
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token,
+    });
+  } else {
+    res.status(401);
+    throw new Error("Incorrect Email or Password");
+  }
+});
+
+//@desc logout user + clear cookie
+//@route POST api/users/logout
+//@access Private
+const logoutUser = asyncHandler(async (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({ message: "Logged out successfully !" });
+});
+
 //@desc get users
 //@route GET api/users/
 //@access Private/admin
@@ -48,4 +81,4 @@ const register = asyncHandler(async (req, res) => {
   }
 });
 
-export { getUsers, getUserById, register };
+export { getUsers, getUserById, register, auth, logoutUser };
